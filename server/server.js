@@ -7,10 +7,10 @@ const bodyParser = require('body-parser');
 const http = require('http');
 
 app.use(bodyParser.json());
-app.get('/', express.static(__dirname + './../')); //serves the index.html
+// app.use(express.static(__dirname + './../')); //serves the index.html
 
-app.get('/signup', userController.signIn, function (req, res) {
-    res.send('signup');
+app.post('/signup', userController.createUserTable, userController.signIn, function (req, res) {
+    res.json(res.locals.name);
 });
 
 app.post('/weather', weatherController.getWeather, function (req, res) {

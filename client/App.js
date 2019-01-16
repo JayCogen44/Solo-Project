@@ -2,14 +2,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from './actions/actions';
 
+import WeatherComponent from './components/weather';
+
 class App extends Component {
-    
-    componentDidMount(){
+
+    componentDidMount() {
         this.props.getWeather(this.props.currentCity);
     }
 
-    render(){
-
+    render() {
         const backgroundStyle = {
             background: `${this.props.gradientStart}`,
             background: `-moz-linear-gradient(45deg, ${this.props.gradientStart} 0%, ${this.props.gradientEnd} 100%)`,
@@ -19,30 +20,51 @@ class App extends Component {
                     ,endColorstr=${this.props.gradientEnd},GradientType=1 )`
         }
         return (
-            <div className='wrapper' style={backgroundStyle}>
-                <form onSubmit={(e) => { e.preventDefault(); this.props.getWeather(this.props.currentCity) }}>
-                    <input className='search' value={this.props.currentCity} onChange={this.props.updateCurrentCity} />
-                    <button style={{ display: 'none' }} onClick={this.props.getWeather}></button>
-                </form>
-                <div className='weather-data'>
-                    {this.props.currentTemp}<span className='deg'>&#176;</span>
-                </div>
+            <div>
+                {!this.props.loggedIn &&
+                    <div className="signup-wrapper">
+                        <form id='signUpForm' onSubmit={this.props.signUp}>
+                            <input name='name' placeholder='first name' />
+                            <input name='username' placeholder='username' />
+                            <input name='password' placeholder='password' />
+                            <button onClick={this.props.signUp}>signup</button>
+                        </form>
+                    </div>
+                }
+                {this.props.loggedIn &&
+                    <div className='wrapper' style={backgroundStyle}>
+                        <WeatherComponent
+                            user={this.props.user}
+                            currentTemp={this.props.currentTemp}
+                            currentCity={this.props.currentCity}
+                            updateCurrentCity={this.props.updateCurrentCity}
+                            getWeather={this.props.getWeather}
+                        />
+                    </div>
+                }
             </div>
         )
     }
-    
+
 }
 
-const mapStateToProps = ({reducer}) => ({
+const mapStateToProps = ({ reducer }) => ({
     currentCity: reducer.currentCity,
     currentTemp: reducer.currentTemp,
     gradientStart: reducer.gradientStart,
-    gradientEnd: reducer.gradientEnd
+    gradientEnd: reducer.gradientEnd,
+    loggedIn: reducer.loggedIn,
+    user: reducer.user,
 });
-  
+
 const mapDispatchToProps = dispatch => ({
     getWeather: (city) => dispatch(actions.getWeather(city)),
     updateCurrentCity: (e) => dispatch(actions.updateCurrentCity(e.target.value)),
+    signUp: (e) => {
+        e.preventDefault();
+        const signUpForm = document.getElementById('signUpForm');
+        dispatch(actions.signUp(signUpForm.elements))
+    },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
