@@ -12,6 +12,12 @@ module.exports = {
         open: true,
         contentBase: './',
         publicPath: '/build/',
+        proxy: {
+            '/api': {
+                target: 'http://localhost:3000',
+                pathRewrite: { '^/api': '' }
+            }
+        }
     },
     module: {
         rules: [
